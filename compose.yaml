@@ -1,0 +1,17 @@
+services:
+  inbox:
+    build: .
+    init: true
+    env_file: .env
+    ports:
+      - "127.0.0.1:${INBOX_HOST_PORT:-8788}:8787"
+    volumes:
+      - inbox_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+volumes:
+  inbox_data:
